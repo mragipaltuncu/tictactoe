@@ -17,10 +17,10 @@ def welcome_header():
    ╚═╝   ╚═╝ ╚═════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝   ╚═╝    ╚═════╝ ╚══════╝
                                                                        
 
-//Welcome Friend! Place X to a desired location on the grid.
-//Boxes on the grid are numbered from 1 to 9. 
-//To win you must have three X either horizontally or diagonally placed.
-//Good luck!
+*Welcome Friend! Player1 is "X" and Player2 is "O"
+*Boxes on the grid are numbered from 1 to 9. 
+*You need to place three either horizontally or diagonally to win.
+*Good luck!
 """)
 
 	print(welcome_msg)
@@ -93,7 +93,11 @@ def check_winner_tie(player,board=board):
 #After getting the board position from the player, changes that position in board list to player's sign ('X' or 'O')
 def get_player_input(player, board=board):
 	player_input = int(input("{}Choose a box to put {} [1-9] : ".format("Player1 -- " if player == 'X' else "Player2 -- ",player)))
-	board[player_input] = player
+	if board[player_input] == " ":
+		board[player_input] = player
+	else:
+		print("That spot is taken!")
+		get_player_input(player)
 
 #Asks player for a rematch
 #If yes, it refreshes the board and calls the main() function to startover the game
@@ -103,7 +107,7 @@ def rematch(board=board):
 	ask_rematch = input("Play again? [Y/N]")
 	ask_rematch = ask_rematch.lower()
 	if ask_rematch in ['y','yes']:
-		print("A new challegen begins!")
+		print("A new challenge begins!")
 		time.sleep(1)
 		refresh_board()
 		main()
@@ -129,8 +133,8 @@ def goodbye_header():
    ██║   ██║╚██████╗   ██║   ██║  ██║╚██████╗   ██║   ╚██████╔╝███████╗
    ╚═╝   ╚═╝ ╚═════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝   ╚═╝    ╚═════╝ ╚══════╝
                                                                        
+***You have played wonderfully! See you next time!**
 
-//You have played wonderfully! See you next time!
 """)	
 	print(goodbye_msg)
 	
