@@ -1,124 +1,161 @@
-#Import 'random' module for computer generated random choices
-import random
+import os
+import platform
+import time
 
-#Define a game board, this one is a 3x3 board, starting from position '0'
-board = [0,1,2,
-		 3,4,5,
-		 6,7,8]
+#Main list to represent the game board
+board = [""," "," "," "," "," "," "," "," "," "]
 
-#Resets the board
-def reset_board():
-	global board 
-	board_reset = [0,1,2,
-		 3,4,5,
-		 6,7,8]
+#Self exlanatory, prints welcome_msg
+def welcome_header():
+	welcome_msg = (r"""
 
-	board = board_reset[:]
+████████╗██╗ ██████╗████████╗ █████╗  ██████╗████████╗ ██████╗ ███████╗
+╚══██╔══╝██║██╔════╝╚══██╔══╝██╔══██╗██╔════╝╚══██╔══╝██╔═══██╗██╔════╝    1|2|3
+   ██║   ██║██║        ██║   ███████║██║        ██║   ██║   ██║█████╗  	   4|5|6
+   ██║   ██║██║        ██║   ██╔══██║██║        ██║   ██║   ██║██╔══╝  	   7|8|9
+   ██║   ██║╚██████╗   ██║   ██║  ██║╚██████╗   ██║   ╚██████╔╝███████╗
+   ╚═╝   ╚═╝ ╚═════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝   ╚═╝    ╚═════╝ ╚══════╝
+                                                                       
 
+//Welcome Friend! Place X to a desired location on the grid.
+//Boxes on the grid are numbered from 1 to 9. 
+//To win you must have three X either horizontally or diagonally placed.
+//Good luck!
+""")
 
-#A function to draw game board in a nice format
-def draw():
+	print(welcome_msg)
+
+#The main header on top. Keeps clearing the command line for better view.
+#if argument 'end' is passed to the function it prints out a goodbye header.
+def game_header(state='begin'):
+	if state == 'begin':
+		commands = {"Linux" : "clear", "Windows" : "cls", "Darwin" : "clear"}
+		os.system(commands[platform.system()])
+		welcome_header()
+		draw_board()
+	elif state == 'end':
+		commands = {"Linux" : "clear", "Windows" : "cls", "Darwin" : "clear"}
+		os.system(commands[platform.system()])
+		goodbye_header()
+
+#Takes board list and prints in in a nice format.
+def draw_board(board=board):
 	print('\n')
-	print('|',board[0],'|',board[1],'|',board[2],'|')
+	print('|',board[1],'|',board[2],'|',board[3],'|')
 	print('-------------')
-	print('|',board[3],'|',board[4],'|',board[5],'|')
+	print('|',board[4],'|',board[5],'|',board[6],'|')
 	print('-------------')
-	print('|',board[6],'|',board[7],'|',board[8],'|')
+	print('|',board[7],'|',board[8],'|',board[9],'|')
 	print('\n')	  
 
-
-#A horrible way to check win conditions, listing all possible win positions. char is Either 'X' or 'O'
-def condition_check(char):
-	if board[0] == char and board[1] == char and board[2] == char:
-		return True
-
-	if board[3] == char and board[4] == char and board[5] == char:
-		return True
-
-	if board[6] == char and board[7] == char and board[8] == char:
-		return True
-
-	if board[0] == char and board[3] == char and board[6] == char:
-		return True
-
-	if board[1] == char and board[4] == char and board[7] == char:
-		return True
-
-	if board[2] == char and board[5] ==char and board[8] == char:
-		return True
-
-	if board[0] == char and board[4] ==char and board[8] == char:
-		return True
-
-	if board[2] == char and board[4] ==char and board[6] == char:
-		return True
-
-#A completely useless piece of code to recheck who the winner is 
-def win_check(char):
-	if condition_check(char) and char == 'X':
-		return True
-		 
-	if condition_check(char) and char == 'O':
-		return True
-
-#Main function of the game, starts the game loop.
-def main():
-	#The main loop of the game which continues to run as long as there's no winner or the board still has playable boxes.
-	while True:
-		#Draw game board
-		draw()
-
-		#Player_choice loop, until player chooses an empty box the loop runs
-		while True:
-			#Prompt player to pick a box to place 'X'
-			player_choice = int(input("Chose a box to place 'X' [0-8] :  "))
+#Takes player('X' or 'O') and the game board.
+#Defines all possible win condition positions.
+#Goes through all sets of conditions and checks if all 3 positions are the same player('X' or 'O')
+#If all 3 winning condition positions are same player's returns True.
+def is_winner(player,board=board):
+	win_conditions = [#Horizontal
+					  [1,2,3],[4,5,6],[7,8,9],
+					  #Vertical
+					  [1,4,7],[2,5,8],[3,6,9],
+					  #Diagonal
+					  [1,5,9],[3,5,7]
+					 ]
+	for condition in win_conditions:
+		count = 0
+		for position in condition:
+			if board[position] == player:
+				count += 1
 			
-			#Check if player_choice box is already FULL
-			if board[player_choice] != 'X' and board[player_choice] != 'O':
-				#Place player choice in the board list and replace the number value with 'X' and break the loop
-				board[player_choice] = 'X'
-				break
-			#If the box is full print a message and loop starts again
-			else:
-				print("That box is FULL! Choose another!")
+			if count == 3:
+				return True
+	return False
 
-		#Check for win condition and reset the board, ask for a rematch
-		if win_check('X'):
-			print ("You win!")
-			draw()
-			reset_board()
-			cevap = input("Yeniden Oyna ? [E/H]")
-			if cevap == 'E' or cevap == 'e':
-				main()
-			elif cevap == 'H' or cevap == 'h':
-				"Teşekkürler.Görüşmek üzere!"
-				break
+#Checks for a tie situation. If there's no empty string (" ") left in board list returns True
+def is_tie(board=board):
+	if " " not in board:
+		return True
 
+#Takes player('X' or 'O') and board as arguments. First checks for a winner if there's a winner returns True
+#Then checks for a tie situation. 
+#If both checks fail returns False
+def check_winner_tie(player,board=board):
+	if is_winner(player):
+		print("Player {} wins!".format(player))
+		return True
+	elif is_tie():
+		print("It's a tie")
+		return True
+	else:
+		return False
 
-		#Computer_choice loop, until computer randomly chooses an empty box to loop runs
-		while True:
-			#Random module needs a seed, here the default "system time" is used
-			random.seed()
-			#Computer uses the seed to randomly pick a number between 0-8
-			computer_choice = random.randint(0,8)
-			#Check if the computer_choice is already full,if not break the rule
-			if board[computer_choice] != 'O' and board[computer_choice] != 'X':
-				board[computer_choice] = 'O'
-				break	
+#Takes player('X' or 'O') and board as arguments.
+#Ask player for input. Depending on player argument ('X' or 'O') it formats the input question string.
+#After getting the board position from the player, changes that position in board list to player's sign ('X' or 'O')
+def get_player_input(player, board=board):
+	player_input = int(input("{}Choose a box to put {} [1-9] : ".format("Player1 -- " if player == 'X' else "Player2 -- ",player)))
+	board[player_input] = player
 
-		#Check for win condition and reset the board, ask for a rematch
-		if win_check('O'):
-			print ("You lose!")
-			draw()
-			reset_board()
-			cevap = input("New Game ? [Y/N]")
-			if cevap == 'Y' or cevap == 'y':
-				main()
-			elif cevap == 'N' or cevap == 'n':
-				"Thank you! See you later!"
-				break
+#Asks player for a rematch
+#If yes, it refreshes the board and calls the main() function to startover the game
+#Otherwise it prints the game_header() function with 'end' argument to output goodbye_header()
+def rematch(board=board):
+	
+	ask_rematch = input("Play again? [Y/N]")
+	ask_rematch = ask_rematch.lower()
+	if ask_rematch in ['y','yes']:
+		print("A new challegen begins!")
+		time.sleep(1)
+		refresh_board()
+		main()
+		
+	else:
+		print ("Thank you for playing!")
+		refresh_board()
+		game_header('end')
 
+#A simple function to clear the main game board list for a new game.
+def refresh_board(board=board):
+	for i in range(1,len(board)):
+		board[i] = " "
 
+#Like welcome_header, this header is to be displayed when a game ends and the player does not want a rematch.
+def goodbye_header():
+	goodbye_msg = (r"""
+
+████████╗██╗ ██████╗████████╗ █████╗  ██████╗████████╗ ██████╗ ███████╗
+╚══██╔══╝██║██╔════╝╚══██╔══╝██╔══██╗██╔════╝╚══██╔══╝██╔═══██╗██╔════╝    1|2|3
+   ██║   ██║██║        ██║   ███████║██║        ██║   ██║   ██║█████╗  	   4|5|6
+   ██║   ██║██║        ██║   ██╔══██║██║        ██║   ██║   ██║██╔══╝  	   7|8|9
+   ██║   ██║╚██████╗   ██║   ██║  ██║╚██████╗   ██║   ╚██████╔╝███████╗
+   ╚═╝   ╚═╝ ╚═════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝   ╚═╝    ╚═════╝ ╚══════╝
+                                                                       
+
+//You have played wonderfully! See you next time!
+""")	
+	print(goodbye_msg)
+	
+#MAIN FUNCTION OF THE GAME
+#STARTS A GAME LOOP WHICH CONTINUES TO RUN UNTILL THERE'S A WINNER OR A TIE.
+#STARTS WITH CALLING GAME HEADER WITH DEFAULT 'begin' ARGUMENT
+#GETS INPUT FOR PLAYER 'X'
+#CHECKS IF PLAYER 'X' WINS OR IF THERE'S A TIE. 
+#IF PLAYER WINS OR THERE'S A TIE CALLS REMATCH FUNC AND BREAKS THE MAIN GAME LOOP
+def main(board=board):
+	while True:
+		game_header()
+		get_player_input('X')
+		game_header()
+		if check_winner_tie('X'):
+			rematch()
+			break
+		get_player_input('O')
+		game_header()
+		if check_winner_tie('O'):
+			rematch()
+			break
+
+#calls main() function if the scripts is called from command line/terminal and not imported			
 if __name__ == '__main__':
-	print("\nWelcome to Tic-Tac-Toe")
 	main()
+
+		
