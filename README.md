@@ -5,7 +5,7 @@ It's a beginner's learning project.<br>
 <b>In order to play the game you need a Python 3 interpreter and a command line/terminal</b><br>
 
 To run the game :<br>
-Download the files. Open your command line/terminal. Go to tictactoe.py's folder and run it with your python interpreter.
+Download the files. Open your command line/terminal. Go to tictactoe.py's folder and run it with your python interpreter with one of these commands:
   
   python tictactoe.py <br>
   or<br>
